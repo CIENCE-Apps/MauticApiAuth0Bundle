@@ -20,8 +20,10 @@ class Auth0EntryPoint implements AuthenticationEntryPointInterface
 
     public function start(Request $request, AuthenticationException $authException = null)
     {        
-        $exception = new Auth0AuthenticationException();
-        
-        return $exception->getHttpResponse();
+        return new Response(
+            json_encode(['error' => $authException->getMessage()]),
+            Response::HTTP_UNAUTHORIZED,
+            []
+        );            
     }
 }
