@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="mautic_api_auth0.security.authentication.provider.class">Cinece\MauticApiAuth0Bundle\Security\Authentication\Provider\Auth0Provider</parameter>
+        <parameter key="mautic_api_auth0.security.authentication.listener.class">Cinece\MauticApiAuth0Bundle\Security\Firewall\Auth0Listener</parameter>
+        <parameter key="mautic_api_auth0.security.entry_point.class">Cinece\MauticApiAuth0Bundle\Security\EntryPoint\Auth0EntryPoint</parameter>
+    </parameters>
+
+    <services>
+        <service id="mautic_api_auth0.security.authentication.provider" class="%mautic_api_auth0.security.authentication.provider.class%" public="false">
+            <argument /> <!-- user provider -->
+            <argument type="service" id="mautic_api_auth0.auth0" />
+            <argument type="service" id="security.user_checker" />
+            <argument type="service" id="mautic.user.model.user" />
+            <argument type="service" id="mautic.helper.core_parameters" />
+        </service>
+
+        <service id="mautic_api_auth0.security.authentication.listener" class="%mautic_api_auth0.security.authentication.listener.class%" public="false">
+            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="security.authentication.manager" />
+            <argument type="service" id="mautic_api_auth0.auth0" />
+            <tag name="kernel.event_listener" event="kernel.request" method="handle" priority="256"/>
+        </service>
+
+        <service id="mautic_api_auth0.security.entry_point" class="%mautic_api_auth0.security.entry_point.class%" public="false">
+            <argument type="service" id="mautic_api_auth0.auth0" />
+        </service>
+    </services>
+</container>

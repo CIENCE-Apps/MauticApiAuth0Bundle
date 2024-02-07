@@ -1,0 +1,24 @@
+{
+    "name": "cience/mauticapiauth0bundle",
+    "type": "symfony-bundle",
+    "description": "Auth0 API Protection with Auth0",
+    "keywords": ["auth0", "mautic"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohammad Abu Musa",
+            "email": "m.abumusa@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2|^8.0",
+        "auth0/auth0-php": "8.9.3",
+        "guzzlehttp/guzzle": "*",
+        "guzzlehttp/psr7": "*",
+        "http-interop/http-factory-guzzle": "*"
+    },
+    "autoload": {
+        "psr-4": { "Cinece\\MauticApiAuth0Bundle\\": "" },
+        "exclude-from-classmap": ["/Tests/"]
+    }
+}
