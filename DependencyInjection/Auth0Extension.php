@@ -20,7 +20,12 @@ class Auth0Extension extends Extension
         $processor = new Processor();
         $configuration = new Configuration();
 
-        $config = $processor->processConfiguration($configuration, $configs);        
+        $config = $processor->processConfiguration($configuration, $configs);
+
+        // If the config is empty, do not load the bundle
+        if(!$config){
+            return;
+        }
         
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
