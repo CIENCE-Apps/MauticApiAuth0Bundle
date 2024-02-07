@@ -75,7 +75,7 @@ class Auth0Provider implements AuthenticationProviderInterface
             $tokenData = $token->getAuth0Token();
             $tokenString = $token->getToken();
             $adminRole = $this->userModel->getSystemAdministrator()->getRole();
-            $authorized_machines = $this->coreParametersHelper->getParameter('auth0_authorized_machines');
+            $authorized_machines = $this->coreParametersHelper->getParameter('auth0_api_authorized_machines');
             $authorized_machines =  is_array($authorized_machines) ? $authorized_machines : [];
 
             /**
