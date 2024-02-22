@@ -17,7 +17,6 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Mautic\UserBundle\Entity\User;
 use Mautic\UserBundle\Entity\Role;
 use Mautic\UserBundle\Model\UserModel;
-use Mautic\CoreBundle\Helper\CoreParametersHelper;
 
 class Auth0Provider implements AuthenticationProviderInterface
 {
@@ -41,24 +40,17 @@ class Auth0Provider implements AuthenticationProviderInterface
      */
     protected $userModel;
 
-    /**
-     * @var CoreParametersHelper
-     */
-    protected $coreParametersHelper;
-
     public function __construct(
         UserProviderInterface $userProvider, 
         Auth0 $auth0Service, 
         UserCheckerInterface $userChecker, 
-        UserModel $userModel,
-        CoreParametersHelper $coreParametersHelper
+        UserModel $userModel        
         )
     {
         $this->userProvider = $userProvider;
         $this->auth0Service = $auth0Service;
         $this->userChecker = $userChecker;
         $this->userModel = $userModel;        
-        $this->coreParametersHelper = $coreParametersHelper;
     }
 
      /**
@@ -75,50 +67,40 @@ class Auth0Provider implements AuthenticationProviderInterface
             $tokenData = $token->getAuth0Token();
             $tokenString = $token->getToken();
             $adminRole = $this->userModel->getSystemAdministrator()->getRole();
-            $authorized_machines = $this->coreParametersHelper->getParameter('auth0_api_authorized_machines');
-            $authorized_machines =  is_array($authorized_machines) ? $authorized_machines : [];
-
-            /**
-             * Machine to Machine token is handled here
-             */
-            if(in_array($tokenData['azp'], $authorized_machines)){
-                try{
-                    $user = $this->userProvider->loadUserByUsername($tokenData['sub']);
-                }catch(UsernameNotFoundException $e){
-                    $user = $this->createUser($tokenData, $adminRole);
-                }
-                
-                if(null !== $user){
-                    try{
-                        $this->userChecker->checkPreAuth($user);
-                    }catch(AccountStatusException $e){
-                        throw new AuthenticationException('Access Denied ' . $e->getMessage());
-                    }
-                    $token->setUser($user);                    
-                }
-
-                $token = new Auth0Token($user->getRoles());
-                $token->setAuthenticated(true);
-                $token->setAuth0Token($tokenData);
-                $token->setToken($tokenString);
-
-                if(null !== $user){
-                    try {                        
-                        $this->userChecker->checkPostAuth($user);                        
-                    } catch (AccountStatusException $e) {
-                        throw new AuthenticationException('Access Denied ' . $e->getMessage());
-                    }
-                    
-                    $token->setUser($user);                     
-                }
-                
-                return $token;
+            try{
+                $user = $this->userProvider->loadUserByUsername($tokenData['sub']);
+            }catch(UsernameNotFoundException $e){
+                $user = $this->createUser($tokenData, $adminRole);
             }
+            
+            if(null !== $user){
+                try{
+                    $this->userChecker->checkPreAuth($user);
+                }catch(AccountStatusException $e){
+                    throw new AuthenticationException('Access Denied ' . $e->getMessage());
+                }
+                $token->setUser($user);                    
+            }
+
+            $token = new Auth0Token($user->getRoles());
+            $token->setAuthenticated(true);
+            $token->setAuth0Token($tokenData);
+            $token->setToken($tokenString);
+
+            if(null !== $user){
+                try {                        
+                    $this->userChecker->checkPostAuth($user);                        
+                } catch (AccountStatusException $e) {
+                    throw new AuthenticationException('Access Denied ' . $e->getMessage());
+                }
+                
+                $token->setUser($user);                     
+            }
+            
+            return $token;
         }catch(\Exception $e){
             throw new AuthenticationException('Auth0 authentication failed', 0, $e);
-        }
-                
-        throw new AuthenticationException('Auth0 authentication failed');        
+        }                        
     }
 
     /**

@@ -15,8 +15,7 @@
             <argument /> <!-- user provider -->
             <argument type="service" id="mautic_api_auth0.auth0" />
             <argument type="service" id="security.user_checker" />
-            <argument type="service" id="mautic.user.model.user" />
-            <argument type="service" id="mautic.helper.core_parameters" />
+            <argument type="service" id="mautic.user.model.user" />            
         </service>
 
         <service id="mautic_api_auth0.security.authentication.listener" class="%mautic_api_auth0.security.authentication.listener.class%" public="false">
