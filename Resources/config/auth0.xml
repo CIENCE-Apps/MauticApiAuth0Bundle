@@ -5,15 +5,16 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="mautic.api.auth0.auth0.wrapper.class">Cinece\MauticApiAuth0Bundle\DependencyInjection\Auth0Wrapper\Wrapper</parameter>        
+        <parameter key="mautic.api.auth0.auth0.class">Auth0\SDK\Auth0</parameter>
+        <parameter key="mautic.api.auth0.sdk.config.class">Auth0\SDK\Configuration\SdkConfiguration</parameter>
     </parameters>
 
     <services>
-        <service id="aut0_http_client" class="GuzzleHttp\Client"></service>
-
-        <service id="mautic_api_auth0.auth0.wrapper" class="%mautic.api.auth0.auth0.wrapper.class%">
-            <argument>%mautic_api_auth0.configs%</argument>
-            <argument type="service" id="aut0_http_client" />
+        <service id="mautic_api_auth0.auth0" class="%mautic.api.auth0.auth0.class%">
+            <argument type="service" id="mautic_api_auth0.sdk.config" />
+        </service>
+        <service id="mautic_api_auth0.sdk.config" class="%mautic.api.auth0.sdk.config.class%">
+            <argument>%mautic.api.auth0.sdk.config%</argument>
         </service>
     </services>
 </container>
