@@ -23,6 +23,9 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('mautic_api_auth0');        
         $rootNode
             ->children()
+            ->arrayNode('clients')
+            ->arrayPrototype()
+            ->children()
             ->arrayNode('sdk')
             ->children()
                 ->scalarNode('strategy')
