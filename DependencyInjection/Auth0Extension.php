@@ -9,23 +9,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
-
-class Auth0Extension extends Extension implements PrependExtensionInterface
+class Auth0Extension extends Extension
 {
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container)
-    {
-        $configs = $container->getExtensionConfig($this->getAlias());
-
-        
-    }
-    
-    
     /**
      * {@inheritdoc}
      */
@@ -40,14 +26,14 @@ class Auth0Extension extends Extension implements PrependExtensionInterface
         if(!$config){
             return;
         }
-
+        
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
         foreach (array('auth0', 'security') as $basename) {
             $loader->load(sprintf('%s.xml', $basename));
         }
-        
-        $container->setParameter('mautic_api_auth0.configs', $config);
+
+        $container->setParameter('mautic.api.auth0.sdk.config', $config['sdk']);
     }
 
     /**

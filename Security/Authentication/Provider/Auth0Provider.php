@@ -9,6 +9,9 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
+use Auth0\SDK\Auth0;
+use Auth0\SDK\Exception\InvalidTokenException;
+use Auth0\SDK\Exception\Auth0Exception;
 use Cinece\MauticApiAuth0Bundle\Security\Authentication\Token\Auth0Token;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Mautic\UserBundle\Entity\User;
@@ -22,6 +25,10 @@ class Auth0Provider implements AuthenticationProviderInterface
      * @var UserProviderInterface
      */
     protected $userProvider;
+    /**
+     * @var Auth0
+     */
+    protected $auth0Service;
     
     /**
      * @var UserCheckerInterface
@@ -34,12 +41,14 @@ class Auth0Provider implements AuthenticationProviderInterface
     protected $userModel;
 
     public function __construct(
-        UserProviderInterface $userProvider,        
+        UserProviderInterface $userProvider, 
+        Auth0 $auth0Service, 
         UserCheckerInterface $userChecker, 
         UserModel $userModel        
         )
     {
-        $this->userProvider = $userProvider;        
+        $this->userProvider = $userProvider;
+        $this->auth0Service = $auth0Service;
         $this->userChecker = $userChecker;
         $this->userModel = $userModel;        
     }
