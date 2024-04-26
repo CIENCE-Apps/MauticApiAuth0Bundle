@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
-use Auth0\SDK\Auth0;
+use Cinece\MauticApiAuth0Bundle\DependencyInjection\Auth0Wrapper\Wrapper;
 use Cinece\MauticApiAuth0Bundle\Security\Authentication\Token\Auth0Token;
 
 class Auth0Listener implements ListenerInterface
@@ -25,15 +25,15 @@ class Auth0Listener implements ListenerInterface
     protected $authenticationManager;
 
     /**
-     * @var Auth0
+     * @var Wrapper
      */
-    protected $auth0Service;
+    protected $auth0Clients;
 
-    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, Auth0 $auth0Service)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, Wrapper $auth0Clients)
     {
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
-        $this->auth0Service = $auth0Service;        
+        $this->auth0Clients = $auth0Clients;
     }
 
 
@@ -53,11 +53,20 @@ class Auth0Listener implements ListenerInterface
          * This will check if the token is valid on auth0
          * If it is not valid, it will throw an exception
          */
-        if (null === $authToken = $this->auth0Service->getBearerToken(null, null, null, $hayStack, ['Authorization'])) {
+        $valid = false;
+        foreach ($this->auth0Clients->getAuth0Clients() as $client) {
+            if (null === $authToken = $client->getBearerToken(null, null, null, $hayStack, ['Authorization'])) {
+                $valid = false;
+            }else{
+                $valid = true;
+                break;
+            }
+        }
+
+        if(!$valid){
             return;
         }
         
-
         $token = new Auth0Token();
         $token->setAuth0Token($authToken->toArray());
         $token->setToken($this->processBearerToken($hayStack['Authorization']));
