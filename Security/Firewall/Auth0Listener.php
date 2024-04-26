@@ -61,13 +61,12 @@ class Auth0Listener implements ListenerInterface
                 $valid = true;
                 break;
             }
-
-            if(!$valid){
-                return;
-            }
         }
 
-
+        if(!$valid){
+            return;
+        }
+        
         $token = new Auth0Token();
         $token->setAuth0Token($authToken->toArray());
         $token->setToken($this->processBearerToken($hayStack['Authorization']));

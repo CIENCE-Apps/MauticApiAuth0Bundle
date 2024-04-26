@@ -9,8 +9,11 @@
     </parameters>
 
     <services>
+        <service id="aut0_http_client" class="GuzzleHttp\Client"></service>
+
         <service id="mautic_api_auth0.auth0.wrapper" class="%mautic.api.auth0.auth0.wrapper.class%">
             <argument>%mautic_api_auth0.configs%</argument>
+            <argument type="service" id="aut0_http_client" />
         </service>
     </services>
 </container>

@@ -46,7 +46,7 @@ class Auth0Extension extends Extension implements PrependExtensionInterface
         foreach (array('auth0', 'security') as $basename) {
             $loader->load(sprintf('%s.xml', $basename));
         }
-
+        
         $container->setParameter('mautic_api_auth0.configs', $config);
     }
 
